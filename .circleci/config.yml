@@ -1,13 +1,12 @@
-# Scala CircleCI 2.0 configuration file
+# Elixir CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/sample-config/ for more details
-#
+# Check https://circleci.com/docs/2.0/language-elixir/ for more details
 version: 2
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      # specify the version here
+      - image: circleci/elixir:1.4
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -15,28 +14,10 @@ jobs:
       # - image: circleci/postgres:9.4
 
     working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-      TERM: dumb
-
     steps:
       - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
-      - run: cat /dev/null | sbt test:compile
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies--{{ checksum "build.sbt" }}
-
-      # run tests!
-      - run: cat /dev/null | sbt test:test
+      # specify any bash command here prefixed with `run: `
+      - run: mix deps.get
+      - run: mix ecto.create
+      - run: mix test
